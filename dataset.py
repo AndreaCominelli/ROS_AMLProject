@@ -43,7 +43,7 @@ class Dataset(data.Dataset):
 
     def choose_rotation(self,img):
         rot_index = random.randint(0, 3)
-        #print(rot_index)
+    
         if rot_index == 1: # ruota di 90 gradi
             img = transforms.functional.rotate(img, 90)
         if rot_index == 2: #ruota di 180 gradi

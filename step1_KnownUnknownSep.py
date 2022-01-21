@@ -75,11 +75,8 @@ def step1(args,feature_extractor,rot_cls,obj_cls,source_loader,device):
     for epoch in range(args.epochs_step1):
         print('Epoch: ',epoch)
         for phase in ["train", "val"]:
-            """class_loss, acc_cls, rot_loss, acc_rot = _do_epoch(args,feature_extractor,rot_cls,obj_cls,source_loader,optimizer,device, phase,criterion,dataset_sizes)
-            print("Class Loss %.4f, Class Accuracy %.4f,Rot Loss %.4f, Rot Accuracy %.4f" % (class_loss.item(),acc_cls,rot_loss.item(), acc_rot))"""
-        
             class_loss, acc_cls, rot_loss, acc_rot = _do_epoch(args,feature_extractor,rot_cls,obj_cls,source_loader,optimizer,device, phase,criterion)
-            print("Class Loss %.4f, Class Accuracy %.4f,Rot Loss %.4f, Rot Accuracy %.4f" % (class_loss.item(),acc_cls,rot_loss.item(), acc_rot))
+            print("Class Loss %.4f, Class Accuracy %.4f, Rot Loss %.4f, Rot Accuracy %.4f" % (class_loss.item(),acc_cls,rot_loss.item(), acc_rot))
         
             if phase == "train":    
                 scheduler.step()

@@ -24,7 +24,7 @@ def get_args():
     parser.add_argument("--n_classes_tot", type=int, default=65, help="Number of unknown classes")
 
     # dataset path
-    parser.add_argument("--path_dataset", default="/.../ROS_AMLProject/data", help="Path where the Office-Home dataset is located")
+    parser.add_argument("--path_dataset", default="./data", help="Path where the Office-Home dataset is located")
 
     # data augmentation
     parser.add_argument("--min_scale", default=0.8, type=float, help="Minimum scale percent")
