@@ -7,7 +7,11 @@ from resnet import resnet18_feat_extractor, Classifier
 
 from step1_KnownUnknownSep import step1
 from eval_target import evaluation
-from step2_SourceTargetAdapt import step2
+import numpy as npy
+
+from torch.utils.data.sampler import SubsetRandomSampler
+
+# from step2_SourceTargetAdapt import step2
 
 
 def get_args():
@@ -58,7 +62,7 @@ class Trainer:
         # initialize the network with a number of classes equals to the number of known classes + 1 (the unknown class, trained only in step2)
         self.feature_extractor = resnet18_feat_extractor()
         self.obj_classifier = Classifier(512,self.args.n_classes_known+1)
-        self.rot_classifier = Classifier(512*2,4)
+        self.rot_classifier = Classifier(512,4) # qui perché è 512 * 2??
 
         self.feature_extractor = self.feature_extractor.to(self.device)
         self.obj_cls = self.obj_classifier.to(self.device)
@@ -66,21 +70,25 @@ class Trainer:
 
         source_path_file = 'txt_list/'+args.source+'_known.txt'
         self.source_loader = data_helper.get_train_dataloader(args,source_path_file)
-
+        
         target_path_file = 'txt_list/' + args.target + '.txt'
         self.target_loader_train = data_helper.get_val_dataloader(args,target_path_file)
         self.target_loader_eval = data_helper.get_val_dataloader(args,target_path_file)
 
+        self.source_dataloaders = {
+            "train":self.source_loader,
+            "val":self.target_loader_train
+        }
+
         print("Source: ",self.args.source," Target: ",self.args.target)
         print("Dataset size: source %d, target %d" % (len(self.source_loader.dataset), len(self.target_loader_train.dataset)))
-
 
     def do_training(self):
 
         print('Step 1 --------------------------------------------')
-        step1(self.args,self.feature_extractor,self.rot_cls,self.obj_cls,self.source_loader,self.device)
+        step1(self.args,self.feature_extractor,self.rot_cls,self.obj_cls,self.source_dataloaders,self.device)
 
-        print('Target - Evaluation -- for known/unknown separation')
+        """print('Target - Evaluation -- for known/unknown separation')
         rand = evaluation(self.args,self.feature_extractor,self.rot_cls,self.target_loader_eval,self.device)
 
         # new dataloaders
@@ -89,11 +97,41 @@ class Trainer:
 
         target_path_file = 'new_txt_list/' + self.args.target + '_known_' + str(rand) + '.txt'
         self.target_loader_train = data_helper.get_train_dataloader(self.args,target_path_file)
-        self.target_loader_eval = data_helper.get_val_dataloader(self.args,target_path_file)
+        self.target_loader_eval = data_helper.get_val_dataloader(self.args,target_path_file)"""
 
-        print('Step 2 --------------------------------------------')
-        step2(self.args,self.feature_extractor,self.rot_cls,self.obj_cls,self.source_loader,self.target_loader_train,self.target_loader_eval,self.device)
+        """print('Step 2 --------------------------------------------')
+        step2(self.args,self.feature_extractor,self.rot_cls,self.obj_cls,self.source_loader,self.target_loader_train,self.target_loader_eval,self.device)"""
 
+    def split_train_val(self, ratio, source_file_path, args):
+        names, _ = data_helper._dataset_info(source_file_path)
+        source_dataset_len = len(names)
+
+        indices = list(range(source_dataset_len))
+        npy.random.seed(0)
+        npy.random.shuffle(indices)
+
+        split = int(npy.floor(source_dataset_len * ratio))
+        source_train_indices, source_val_indices = indices[:split], indices[split:]
+
+        source_train_sampler = SubsetRandomSampler(source_train_indices)
+        source_val_sampler = SubsetRandomSampler(source_val_indices)
+
+        samplers = {
+            "train":source_train_sampler,
+            "val":source_val_sampler
+        }
+
+        dataset_sizes = {
+            "train": len(source_train_indices),
+            "val": len(source_val_indices)
+        }
+
+        # dopo aver splittato training e validation set, costruisco i 2 dataloaders
+        # nb: non devo fare lo shuffle, avendolo già fatto in precedenza
+
+        dataloaders = {x: data_helper.get_train_dataloader(args, source_file_path, samplers[x])
+                        for x in ["train", "val"]}
+        return dataloaders, dataset_sizes
 
 def main():
     args = get_args()
