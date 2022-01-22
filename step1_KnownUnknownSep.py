@@ -34,7 +34,7 @@ def _do_epoch(args,feature_extractor,rot_cls,obj_cls,dataloaders,optimizer,devic
             imgs_predictions = obj_cls(imgs_out)
             
             rot_out = feature_extractor(rot_imgs)
-            rot_predictions = rot_cls(torch.cat(rot_out, imgs_out))
+            rot_predictions = rot_cls(torch.cat((rot_out, imgs_out)))
             
             _, imgs_preds = torch.max(imgs_predictions, 1)
             _, rot_preds = torch.max(rot_predictions, 1)
