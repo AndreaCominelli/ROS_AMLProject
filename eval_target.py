@@ -25,11 +25,11 @@ def evaluation(args,feature_extractor,rot_cls,target_loader_eval,device):
             rot_predictions = rot_cls(torch.cat((rot_out, imgs_out), dim=1))
 
             normality_score, _ = torch.max(rot_predictions, 1)
-            normality_scores.append(normality_score)
-            ground_truth.append(rot_l)
+            normality_scores.append(normality_score.item())
+            ground_truth.append(rot_l.item())
 
-    print(normality_scores)
-    print(normality_scores)
+    """print(normality_scores)
+    print(normality_scores)"""
 
     normality_scores = np.ndarray(normality_scores)
     ground_truth = np.ndarray(ground_truth)
