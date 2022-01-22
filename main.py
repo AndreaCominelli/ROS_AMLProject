@@ -88,8 +88,8 @@ class Trainer:
 
         print('Target - Evaluation -- for known/unknown separation')
 
-        self.rot_cls.load_state_dict(torch.load("./feature_extractor_params.pt"))
-        self.feature_extractor.load_state_dict(torch.load("./rot_cls_params.pt"))
+        self.rot_cls.load_state_dict(torch.load("./feature_extractor_params.pt"), strict=False)
+        self.feature_extractor.load_state_dict(torch.load("./rot_cls_params.pt"), strict=False)
 
         rand = evaluation(self.args,self.feature_extractor,self.rot_cls,self.target_loader_eval,self.device)
 
