@@ -26,7 +26,7 @@ def evaluation(args,feature_extractor,rot_cls,target_loader_eval,device):
 
             # convert rot scores in probabilities
 
-            softmax = torch.nn.Sofmax()
+            softmax = torch.nn.Softmax()
 
             normality_score, _ = torch.max(rot_predictions, 1)
             rot_proba = softmax(normality_score)
