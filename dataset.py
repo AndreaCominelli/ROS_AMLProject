@@ -22,6 +22,17 @@ def _dataset_info(txt_labels):
 
     return file_names, labels
 
+def choose_rotation(img):
+    rot_index = random.randint(0, 3)
+    
+    if rot_index == 1: # ruota di 90 gradi
+        img = transforms.functional.rotate(img, 90)
+    if rot_index == 2: #ruota di 180 gradi
+        img = transforms.functional.rotate(img, 180)
+    if rot_index == 3: #ruota di 270 gradi
+        img = transforms.functional.rotate(img, 270)
+    
+    return img, rot_index
 
 class Dataset(data.Dataset):
     def __init__(self, names, labels, path_dataset,img_transformer=None):
@@ -37,24 +48,13 @@ class Dataset(data.Dataset):
         
         if self._image_transformer:
             img = self._image_transformer(img)
-            img_rot, index_rot = self.choose_rotation(img)
+            img_rot, index_rot = choose_rotation(img)
         
         return img, int(self.labels[index]), img_rot, index_rot
 
-    def choose_rotation(self,img):
-        rot_index = random.randint(0, 3)
-    
-        if rot_index == 1: # ruota di 90 gradi
-            img = transforms.functional.rotate(img, 90)
-        if rot_index == 2: #ruota di 180 gradi
-            img = transforms.functional.rotate(img, 180)
-        if rot_index == 3: #ruota di 270 gradi
-            img = transforms.functional.rotate(img, 270)
-
-        return img, rot_index
-
     def __len__(self):
         return len(self.names)
+
 
 
 class TestDataset(data.Dataset):
@@ -71,21 +71,9 @@ class TestDataset(data.Dataset):
         
         if self._image_transformer:
             img = self._image_transformer(img)
-            img_rot, index_rot = self.choose_rotation(img)
+            img_rot, index_rot = choose_rotation(img)
         
         return img, int(self.labels[index]), img_rot, index_rot
-
-    def choose_rotation(self,img):
-        rot_index = random.randint(0, 3)
-    
-        if rot_index == 1: # ruota di 90 gradi
-            img = transforms.functional.rotate(img, 90)
-        if rot_index == 2: #ruota di 180 gradi
-            img = transforms.functional.rotate(img, 180)
-        if rot_index == 3: #ruota di 270 gradi
-            img = transforms.functional.rotate(img, 270)
-
-        return img, rot_index
 
     def __len__(self):
         return len(self.names)

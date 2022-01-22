@@ -62,7 +62,7 @@ class Trainer:
         # initialize the network with a number of classes equals to the number of known classes + 1 (the unknown class, trained only in step2)
         self.feature_extractor = resnet18_feat_extractor()
         self.obj_classifier = Classifier(512,self.args.n_classes_known+1)
-        self.rot_classifier = Classifier(512,4) # qui perché è 512 * 2??
+        self.rot_classifier = Classifier(512*2,4)
 
         self.feature_extractor = self.feature_extractor.to(self.device)
         self.obj_cls = self.obj_classifier.to(self.device)
@@ -88,7 +88,7 @@ class Trainer:
         print('Step 1 --------------------------------------------')
         step1(self.args,self.feature_extractor,self.rot_cls,self.obj_cls,self.source_dataloaders,self.device)
 
-        """print('Target - Evaluation -- for known/unknown separation')
+        print('Target - Evaluation -- for known/unknown separation')
         rand = evaluation(self.args,self.feature_extractor,self.rot_cls,self.target_loader_eval,self.device)
 
         # new dataloaders
@@ -97,7 +97,7 @@ class Trainer:
 
         target_path_file = 'new_txt_list/' + self.args.target + '_known_' + str(rand) + '.txt'
         self.target_loader_train = data_helper.get_train_dataloader(self.args,target_path_file)
-        self.target_loader_eval = data_helper.get_val_dataloader(self.args,target_path_file)"""
+        self.target_loader_eval = data_helper.get_val_dataloader(self.args,target_path_file)
 
         """print('Step 2 --------------------------------------------')
         step2(self.args,self.feature_extractor,self.rot_cls,self.obj_cls,self.source_loader,self.target_loader_train,self.target_loader_eval,self.device)"""
