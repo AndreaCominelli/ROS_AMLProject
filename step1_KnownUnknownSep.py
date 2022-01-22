@@ -121,3 +121,7 @@ def step1(args,feature_extractor,rot_cls,obj_cls,source_loader,device):
         class_loss, acc_cls, rot_loss, acc_rot = _do_epoch(args,feature_extractor,rot_cls,obj_cls,source_loader,optimizer,device,criterion)
         print("Class Loss %.4f, Class Accuracy %.4f,Rot Loss %.4f, Rot Accuracy %.4f" % (class_loss.item(),acc_cls,rot_loss.item(), acc_rot))
         scheduler.step()
+    
+    torch.save(feature_extractor.state_dict(), "./feature_extractor_params.pt")
+    torch.save(rot_cls.state_dict(), "./rot_cls_params.pt")
+    torch.save(obj_cls.state_dict(), "./obj_cls_params.pt")

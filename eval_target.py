@@ -12,6 +12,7 @@ def evaluation(args,feature_extractor,rot_cls,target_loader_eval,device):
 
     feature_extractor.eval()
     rot_cls.eval()
+    
     normality_scores = []
     ground_truth = []
 

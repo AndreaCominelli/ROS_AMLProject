@@ -1,4 +1,5 @@
 import argparse
+import os
 
 import torch
 
@@ -81,10 +82,15 @@ class Trainer:
 
     def do_training(self):
 
-        print('Step 1 --------------------------------------------')
-        step1(self.args,self.feature_extractor,self.rot_cls,self.obj_cls,self.source_loader,self.device)
+        if not os.path.isDir("./feature_extractor_params.pt") and not os.path.isDir("./rot_cls_params.pt"):
+            print('Step 1 --------------------------------------------')
+            step1(self.args,self.feature_extractor,self.rot_cls,self.obj_cls,self.source_loader,self.device)
 
         print('Target - Evaluation -- for known/unknown separation')
+
+        self.rot_cls.load_state_dict(torch.load("./feature_extractor_params.pt"))
+        self.feature_extractor.load_state_dict(torch.load("./rot_cls_params.pt"))
+
         rand = evaluation(self.args,self.feature_extractor,self.rot_cls,self.target_loader_eval,self.device)
 
         # new dataloaders
