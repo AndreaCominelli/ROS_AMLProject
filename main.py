@@ -82,7 +82,7 @@ class Trainer:
 
     def do_training(self):
 
-        if not os.path.isdir("./feature_extractor_params.pt") and not os.path.isdir("./rot_cls_params.pt"):
+        if not os.path.isfile("./feature_extractor_params.pt") and not os.path.isfile("./rot_cls_params.pt"):
             print('Step 1 --------------------------------------------')
             step1(self.args,self.feature_extractor,self.rot_cls,self.obj_cls,self.source_loader,self.device)
 
