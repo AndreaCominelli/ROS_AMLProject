@@ -33,8 +33,11 @@ class Dataset(data.Dataset):
     def __getitem__(self, index):
 
         img_name = self.names[index]
-        img = Image.open(self.data_path +"/"+ img_name)
-
+        try:    
+            img = Image.open(self.data_path +"/"+ img_name)
+        except:
+            print(self.data_path +"/"+ img_name)
+            
         if self._image_transformer:
             img = self._image_transformer(img)
             img_rot, index_rot = self.choose_rotation(img)
@@ -81,7 +84,7 @@ def imshow(img, lbl):
     plt.show()
 
 if __name__ == "__main__":
-    source_file = './txt_list/Art.txt'
+    source_file = 'txt_list/Clipart.txt'
     names, lbls = _dataset_info(source_file)
     
     transform = transforms.Compose(
