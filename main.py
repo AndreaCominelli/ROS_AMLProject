@@ -71,6 +71,7 @@ class Trainer:
         source_path_file = 'txt_list/'+args.source+'_known.txt'
         self.source_loader = data_helper.get_train_dataloader(args,source_path_file)
         
+        
         target_path_file = 'txt_list/' + args.target + '.txt'
         self.target_loader_train = data_helper.get_val_dataloader(args,target_path_file)
         self.target_loader_eval = data_helper.get_val_dataloader(args,target_path_file)
