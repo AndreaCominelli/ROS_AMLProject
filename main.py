@@ -82,11 +82,15 @@ class Trainer:
 
     def do_training(self):
 
+        # just check if final training parameters are saved somewhere. If so, so not train again
+
         if not os.path.isfile("./feature_extractor_params.pt") and not os.path.isfile("./rot_cls_params.pt"):
             print('Step 1 --------------------------------------------')
             step1(self.args,self.feature_extractor,self.rot_cls,self.obj_cls,self.source_loader,self.device)
 
         print('Target - Evaluation -- for known/unknown separation')
+
+        # if params are already computed, load the model and procede with its evaluation
 
         self.rot_cls.load_state_dict(torch.load("./feature_extractor_params.pt"), strict=False)
         self.feature_extractor.load_state_dict(torch.load("./rot_cls_params.pt"), strict=False)
