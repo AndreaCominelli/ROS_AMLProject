@@ -1,7 +1,7 @@
 
 import torch
 from torch import nn
-from torch.utils.data import Subset, Dataloader
+from torch.utils.data import Subset, DataLoader
 from optimizer_helper import get_optim_and_scheduler
 from tqdm import tqdm
 import numpy as npy
@@ -80,8 +80,8 @@ def step1(args,feature_extractor,rot_cls,obj_cls,source_loader,device):
 
     
     source_loaders = {
-        "train": Dataloader(Subset(dataset, source_train_indices), batch_size=args.batch_size),
-        "val": Dataloader(Subset(dataset, source_val_indices), batch_size=1)
+        "train": DataLoader(Subset(dataset, source_train_indices), batch_size=args.batch_size),
+        "val": DataLoader(Subset(dataset, source_val_indices), batch_size=1)
     }
 
     for epoch in range(args.epochs_step1):
