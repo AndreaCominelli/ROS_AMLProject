@@ -3,6 +3,7 @@ import torch
 import numpy as np
 from sklearn.metrics import roc_auc_score
 import random
+from tqdm import tqdm
 
 
 #### Implement the evaluation on the target for the known/unknown separation
@@ -15,7 +16,7 @@ def evaluation(args,feature_extractor,rot_cls,target_loader_eval,device):
     ground_truth = []
 
     with torch.no_grad():
-        for it, (data,class_l,data_rot,rot_l) in enumerate(target_loader_eval):
+        for it, (data,class_l,data_rot,rot_l) in tqdm(enumerate(target_loader_eval)):
             data, class_l, data_rot, rot_l = data.to(device), class_l.to(device), data_rot.to(device), rot_l.to(device)
 
             imgs_out = feature_extractor(data)
@@ -26,6 +27,12 @@ def evaluation(args,feature_extractor,rot_cls,target_loader_eval,device):
             normality_scores.append(normality_score)
             ground_truth.append(rot_l)
 
+    normality_scores = np.ndarray(normality_scores)
+    ground_truth = np.ndarray(ground_truth)
+
+    normality_scores = normality_scores.flatten()
+    ground_truth = ground_truth.flatten()
+    
     auroc = roc_auc_score(ground_truth, normality_scores)
     print('AUROC %.4f' % auroc)
 
