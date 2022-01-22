@@ -31,11 +31,11 @@ def evaluation(args,feature_extractor,rot_cls,target_loader_eval,device):
     """print(normality_scores)
     print(normality_scores)"""
 
-    normality_scores = np.ndarray(normality_scores)
+    """normality_scores = np.ndarray(normality_scores)
     ground_truth = np.ndarray(ground_truth)
 
     normality_scores = normality_scores.flatten()
-    ground_truth = ground_truth.flatten()
+    ground_truth = ground_truth.flatten()"""
     
     auroc = roc_auc_score(ground_truth, normality_scores)
     print('AUROC %.4f' % auroc)
