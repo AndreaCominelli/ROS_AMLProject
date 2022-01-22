@@ -75,18 +75,13 @@ class Trainer:
         self.target_loader_train = data_helper.get_val_dataloader(args,target_path_file)
         self.target_loader_eval = data_helper.get_val_dataloader(args,target_path_file)
 
-        self.source_dataloaders = {
-            "train":self.source_loader,
-            "val":self.target_loader_train
-        }
-
         print("Source: ",self.args.source," Target: ",self.args.target)
         print("Dataset size: source %d, target %d" % (len(self.source_loader.dataset), len(self.target_loader_train.dataset)))
 
     def do_training(self):
 
         print('Step 1 --------------------------------------------')
-        step1(self.args,self.feature_extractor,self.rot_cls,self.obj_cls,self.source_dataloaders,self.device)
+        step1(self.args,self.feature_extractor,self.rot_cls,self.obj_cls,self.source_loader,self.device)
 
         print('Target - Evaluation -- for known/unknown separation')
         rand = evaluation(self.args,self.feature_extractor,self.rot_cls,self.target_loader_eval,self.device)
@@ -101,37 +96,6 @@ class Trainer:
 
         """print('Step 2 --------------------------------------------')
         step2(self.args,self.feature_extractor,self.rot_cls,self.obj_cls,self.source_loader,self.target_loader_train,self.target_loader_eval,self.device)"""
-
-    def split_train_val(self, ratio, source_file_path, args):
-        names, _ = data_helper._dataset_info(source_file_path)
-        source_dataset_len = len(names)
-
-        indices = list(range(source_dataset_len))
-        npy.random.seed(0)
-        npy.random.shuffle(indices)
-
-        split = int(npy.floor(source_dataset_len * ratio))
-        source_train_indices, source_val_indices = indices[:split], indices[split:]
-
-        source_train_sampler = SubsetRandomSampler(source_train_indices)
-        source_val_sampler = SubsetRandomSampler(source_val_indices)
-
-        samplers = {
-            "train":source_train_sampler,
-            "val":source_val_sampler
-        }
-
-        dataset_sizes = {
-            "train": len(source_train_indices),
-            "val": len(source_val_indices)
-        }
-
-        # dopo aver splittato training e validation set, costruisco i 2 dataloaders
-        # nb: non devo fare lo shuffle, avendolo già fatto in precedenza
-
-        dataloaders = {x: data_helper.get_train_dataloader(args, source_file_path, samplers[x])
-                        for x in ["train", "val"]}
-        return dataloaders, dataset_sizes
 
 def main():
     args = get_args()

@@ -1,12 +1,14 @@
 
 import torch
 from torch import nn
+from torch.utils.data import Subset, Dataloader
 from optimizer_helper import get_optim_and_scheduler
 from tqdm import tqdm
+import numpy as npy
 
 #### Implement Step1
 
-def _do_epoch(args,feature_extractor,rot_cls,obj_cls,dataloaders,optimizer,device,phase,criterion):
+def _do_epoch(args,feature_extractor,rot_cls,obj_cls,dataloaders,optimizer,device,phase):
     
     if phase == "train":
         print("TRAINING MODE")
@@ -41,8 +43,8 @@ def _do_epoch(args,feature_extractor,rot_cls,obj_cls,dataloaders,optimizer,devic
 
             # compute loss
 
-            img_loss = criterion(imgs_predictions, lbls)
-            rot_loss = criterion(rot_predictions, rot_lbls)
+            img_loss = nn.CrossEntropyLoss(imgs_predictions, lbls)
+            rot_loss = nn.CrossEntropyLoss(rot_predictions, rot_lbls)
 
             loss = img_loss + args.weight_RotTask_step1*rot_loss
 
@@ -69,12 +71,23 @@ def _do_epoch(args,feature_extractor,rot_cls,obj_cls,dataloaders,optimizer,devic
 
 def step1(args,feature_extractor,rot_cls,obj_cls,source_loader,device):
     optimizer, scheduler = get_optim_and_scheduler(feature_extractor,rot_cls,obj_cls, args.epochs_step1, args.learning_rate, args.train_all)
-    criterion = nn.CrossEntropyLoss()
+    ratio = 0.67
+    dataset = source_loader.dataset
+
+    indices = list(range(len(dataset)))
+    split = int(npy.floor(len(dataset) * ratio))
+    source_train_indices, source_val_indices = indices[:split], indices[split:]
+
+    
+    source_loaders = {
+        "train": Dataloader(Subset(dataset, source_train_indices), batch_size=args.batch_size),
+        "val": Dataloader(Subset(dataset, source_val_indices), batch_size=1)
+    }
 
     for epoch in range(args.epochs_step1):
         print('Epoch: ',epoch)
         for phase in ["train", "val"]:
-            class_loss, acc_cls, rot_loss, acc_rot = _do_epoch(args,feature_extractor,rot_cls,obj_cls,source_loader,optimizer,device, phase,criterion)
+            class_loss, acc_cls, rot_loss, acc_rot = _do_epoch(args,feature_extractor,rot_cls,obj_cls,source_loaders,optimizer,device, phase)
             print("Class Loss %.4f, Class Accuracy %.4f, Rot Loss %.4f, Rot Accuracy %.4f" % (class_loss.item(),acc_cls,rot_loss.item(), acc_rot))
         
             if phase == "train":    
