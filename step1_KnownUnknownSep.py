@@ -66,7 +66,7 @@ from tqdm import tqdm
 
     return img_loss, img_acc, rot_loss, rot_acc"""
 
-def _do_epoch(args,feature_extractor,rot_cls,obj_cls,source_loader,optimizer,device):
+def _do_epoch(args,feature_extractor,rot_cls,obj_cls,source_loader,optimizer,device,criterion):
     
     feature_extractor.train()
     obj_cls.train()
@@ -93,8 +93,8 @@ def _do_epoch(args,feature_extractor,rot_cls,obj_cls,source_loader,optimizer,dev
 
         # compute loss
 
-        img_loss = nn.CrossEntropyLoss(imgs_predictions, lbls)
-        rot_loss = nn.CrossEntropyLoss(rot_predictions, rot_lbls)
+        img_loss = criterion(imgs_predictions, lbls)
+        rot_loss = criterion(rot_predictions, rot_lbls)
 
         loss = img_loss + args.weight_RotTask_step1*rot_loss
 
@@ -114,10 +114,10 @@ def _do_epoch(args,feature_extractor,rot_cls,obj_cls,source_loader,optimizer,dev
 
 def step1(args,feature_extractor,rot_cls,obj_cls,source_loader,device):
     optimizer, scheduler = get_optim_and_scheduler(feature_extractor,rot_cls,obj_cls, args.epochs_step1, args.learning_rate, args.train_all)
-
+    criterion = nn.CrossEntropyLoss()
 
     for epoch in range(args.epochs_step1):
         print('Epoch: ',epoch)
-        class_loss, acc_cls, rot_loss, acc_rot = _do_epoch(args,feature_extractor,rot_cls,obj_cls,source_loader,optimizer,device)
+        class_loss, acc_cls, rot_loss, acc_rot = _do_epoch(args,feature_extractor,rot_cls,obj_cls,source_loader,optimizer,device,criterion)
         print("Class Loss %.4f, Class Accuracy %.4f,Rot Loss %.4f, Rot Accuracy %.4f" % (class_loss.item(),acc_cls,rot_loss.item(), acc_rot))
         scheduler.step()
