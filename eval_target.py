@@ -28,8 +28,8 @@ def evaluation(args,feature_extractor,rot_cls,target_loader_eval,device):
             normality_scores.append(normality_score.item())
             ground_truth.append(rot_l.item())
 
-    print(normality_scores)
-    print(ground_truth)
+    """print(normality_scores)
+    print(ground_truth)"""
 
     """normality_scores = np.ndarray(normality_scores)
     ground_truth = np.ndarray(ground_truth)
@@ -37,7 +37,7 @@ def evaluation(args,feature_extractor,rot_cls,target_loader_eval,device):
     normality_scores = normality_scores.flatten()
     ground_truth = ground_truth.flatten()"""
     
-    auroc = roc_auc_score(ground_truth, normality_scores)
+    auroc = roc_auc_score(ground_truth, normality_scores, multi_class='ovr')
     print('AUROC %.4f' % auroc)
 
     # create new txt files
