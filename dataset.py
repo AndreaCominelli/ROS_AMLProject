@@ -32,12 +32,9 @@ class Dataset(data.Dataset):
 
     def __getitem__(self, index):
 
-        img_name = self.names[index]
-        try:    
-            img = Image.open(self.data_path +"/"+ img_name)
-        except:
-            print(self.data_path +"/"+ img_name)
-            
+        img_name = self.names[index]    
+        img = Image.open(self.data_path +"/"+ img_name)
+        
         if self._image_transformer:
             img = self._image_transformer(img)
             img_rot, index_rot = self.choose_rotation(img)
@@ -60,7 +57,6 @@ class Dataset(data.Dataset):
         return len(self.names)
 
 
-
 class TestDataset(data.Dataset):
     def __init__(self, names, labels, path_dataset,img_transformer=None):
         self.data_path = path_dataset
@@ -70,8 +66,26 @@ class TestDataset(data.Dataset):
 
     def __getitem__(self, index):
 
-
+        img_name = self.names[index]    
+        img = Image.open(self.data_path +"/"+ img_name)
+        
+        if self._image_transformer:
+            img = self._image_transformer(img)
+            img_rot, index_rot = self.choose_rotation(img)
+        
         return img, int(self.labels[index]), img_rot, index_rot
+
+    def choose_rotation(self,img):
+        rot_index = random.randint(0, 3)
+    
+        if rot_index == 1: # ruota di 90 gradi
+            img = transforms.functional.rotate(img, 90)
+        if rot_index == 2: #ruota di 180 gradi
+            img = transforms.functional.rotate(img, 180)
+        if rot_index == 3: #ruota di 270 gradi
+            img = transforms.functional.rotate(img, 270)
+
+        return img, rot_index
 
     def __len__(self):
         return len(self.names)
