@@ -28,8 +28,8 @@ def evaluation(args,feature_extractor,rot_cls,target_loader_eval,device):
             normality_scores.append(normality_score.item())
             ground_truth.append(rot_l.item())
 
-    """print(normality_scores)
-    print(normality_scores)"""
+    print(normality_scores)
+    print(ground_truth)
 
     """normality_scores = np.ndarray(normality_scores)
     ground_truth = np.ndarray(ground_truth)
