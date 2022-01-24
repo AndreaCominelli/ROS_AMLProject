@@ -41,18 +41,10 @@ def evaluation(args,feature_extractor,rot_cls,target_loader_eval,device):
             normality_score_180, _ = torch.max(rot_predictions_180, 1)
             normality_score_270, _ = torch.max(rot_predictions_270, 1)
 
-            normality_score = np.mean([normality_score_0.item(), normality_score_90.item(), normality_score_180.item(), normality_score_270.item()])[0]
+            normality_score = np.mean([normality_score_0.item(), normality_score_90.item(), normality_score_180.item(), normality_score_270.item()])
 
             normality_scores.append(normality_score)
 
-    """print(normality_scores)
-    print(ground_truth)"""
-
-    """normality_scores = np.ndarray(normality_scores)
-    ground_truth = np.ndarray(ground_truth)
-
-    normality_scores = normality_scores.flatten()
-    ground_truth = ground_truth.flatten()"""
     
     auroc = roc_auc_score(ground_truth, normality_scores)
     print('AUROC %.4f' % auroc)
