@@ -73,14 +73,15 @@ class TestDataset(data.Dataset):
 
     def __getitem__(self, index):
 
-        img_name = self.names[index]    
+        img_name = self.names[index]
+        img_path = self.data_path +"/"+ img_name
         img = Image.open(self.data_path +"/"+ img_name)
         
         if self._image_transformer:
             img = self._image_transformer(img)
             _, img_90, img_180, img_270 = rotate_4_times(img)
         
-        return img, int(self.labels[index]), img_90, img_180, img_270
+        return img, int(self.labels[index]), img_90, img_180, img_270, img_path
 
     def __len__(self):
         return len(self.names)
