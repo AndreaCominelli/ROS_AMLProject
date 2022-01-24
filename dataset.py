@@ -75,7 +75,7 @@ class TestDataset(data.Dataset):
 
         img_name = self.names[index]
         img_path = self.data_path +"/"+ img_name
-        img = Image.open(self.data_path +"/"+ img_name)
+        img = Image.open(img_path)
         
         if self._image_transformer:
             img = self._image_transformer(img)
