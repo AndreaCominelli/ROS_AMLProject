@@ -20,7 +20,7 @@ def evaluation(args,feature_extractor,rot_cls,target_loader_eval,device):
 
     with torch.no_grad():
         for it, (img ,class_l, img_90, img_180, img_270, img_path) in tqdm(enumerate(target_loader_eval)):
-            img ,class_l, img_90, img_180, img_270, img_path = img.to(device), class_l.to(device), img_90.to(device), img_180.to(device), img_270.to(device), img_path.to(device)
+            img ,class_l, img_90, img_180, img_270 = img.to(device), class_l.to(device), img_90.to(device), img_180.to(device), img_270.to(device)
             
             if class_l > args.n_classes_known:
                 ground_truth.append(0)
