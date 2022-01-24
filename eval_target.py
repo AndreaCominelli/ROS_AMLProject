@@ -24,13 +24,7 @@ def evaluation(args,feature_extractor,rot_cls,target_loader_eval,device):
             rot_out = feature_extractor(data_rot)
             rot_predictions = rot_cls(torch.cat((rot_out, imgs_out), dim=1))
 
-            # convert rot scores in probabilities
-
-            softmax = torch.nn.Softmax(dim=0)
-
             normality_score, _ = torch.max(rot_predictions, 1)
-            rot_proba = softmax(normality_score)
-
             normality_scores.append(rot_proba.item())
             ground_truth.append(rot_l.item())
 
