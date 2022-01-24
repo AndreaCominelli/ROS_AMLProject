@@ -65,13 +65,11 @@ def evaluation(args,feature_extractor,rot_cls,target_loader_eval,device):
     target_known = open('new_txt_list/' + args.target + '_known_' + str(rand) + '.txt','a')
 
     for path in known_samples:
-        print(path)
-        target_known.write(path)
+        target_known.write(path[0])
     target_known.close()
 
     for path in unknown_samples:
-        print(path)
-        target_unknown.write(path)
+        target_unknown.write(path[0])
     target_unknown.close()
 
     number_of_known_samples = len(known_samples)
