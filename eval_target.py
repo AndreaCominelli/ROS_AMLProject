@@ -17,16 +17,33 @@ def evaluation(args,feature_extractor,rot_cls,target_loader_eval,device):
     ground_truth = []
 
     with torch.no_grad():
-        for it, (data,class_l,data_rot,rot_l) in tqdm(enumerate(target_loader_eval)):
-            data, class_l, data_rot, rot_l = data.to(device), class_l.to(device), data_rot.to(device), rot_l.to(device)
+        for it, (img ,class_l, img_90, img_180, img_270) in tqdm(enumerate(target_loader_eval)):
+            img ,class_l, img_90, img_180, img_270 = img.to(device), class_l.to(device), img_90.to(device), img_180.to(device), img_270.to(device)
+            
+            if class_l > args.n_classes_known:
+                ground_truth.append(0)
+            else:
+                ground_truth.append(1)
 
-            imgs_out = feature_extractor(data)
-            rot_out = feature_extractor(data_rot)
-            rot_predictions = rot_cls(torch.cat((rot_out, imgs_out), dim=1))
+            rot_out_0   = feature_extractor(img)
+            rot_out_90  = feature_extractor(img_90)
+            rot_out_180 = feature_extractor(img_180)
+            rot_out_270 = feature_extractor(img_270)
 
-            normality_score, _ = torch.max(rot_predictions, 1)
-            normality_scores.append(normality_score.item())
-            ground_truth.append(rot_l.item())
+            rot_predictions_0   = rot_cls(torch.cat((rot_out_0, rot_out_0), dim=1))
+            rot_predictions_90  = rot_cls(torch.cat((rot_out_90, rot_out_0), dim=1))
+            rot_predictions_180 = rot_cls(torch.cat((rot_out_180, rot_out_0), dim=1))
+            rot_predictions_270 = rot_cls(torch.cat((rot_out_270, rot_out_0), dim=1))
+            
+
+            normality_score_0, _   = torch.max(rot_predictions_0, 1)
+            normality_score_90, _  = torch.max(rot_predictions_90, 1)
+            normality_score_180, _ = torch.max(rot_predictions_180, 1)
+            normality_score_270, _ = torch.max(rot_predictions_270, 1)
+
+            normality_score = np.mean([normality_score_0.item(), normality_score_90.item(), normality_score_180.item(), normality_score_270.item()])[0]
+
+            normality_scores.append(normality_score)
 
     """print(normality_scores)
     print(ground_truth)"""
@@ -37,7 +54,7 @@ def evaluation(args,feature_extractor,rot_cls,target_loader_eval,device):
     normality_scores = normality_scores.flatten()
     ground_truth = ground_truth.flatten()"""
     
-    auroc = roc_auc_score(ground_truth, normality_scores, multi_class='ovr')
+    auroc = roc_auc_score(ground_truth, normality_scores)
     print('AUROC %.4f' % auroc)
 
     # create new txt files

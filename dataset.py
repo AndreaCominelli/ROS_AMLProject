@@ -22,7 +22,7 @@ def _dataset_info(txt_labels):
 
     return file_names, labels
 
-def choose_rotation(img):
+def choose_random_rotation(img):
     rot_index = random.randint(0, 3)
     
     if rot_index == 1: # ruota di 90 gradi
@@ -33,6 +33,13 @@ def choose_rotation(img):
         img = transforms.functional.rotate(img, 270)
     
     return img, rot_index
+
+def rotate_4_times(img):
+    img_90 = transforms.functional.rotate(img, 90)
+    img_180 = transforms.functional.rotate(img, 180)
+    img_270 = transforms.functional.rotate(img, 270)
+
+    return img, img_90, img_180, img_270
 
 class Dataset(data.Dataset):
     def __init__(self, names, labels, path_dataset,img_transformer=None):
@@ -48,7 +55,7 @@ class Dataset(data.Dataset):
         
         if self._image_transformer:
             img = self._image_transformer(img)
-            img_rot, index_rot = choose_rotation(img)
+            img_rot, index_rot = choose_random_rotation(img)
         
         return img, int(self.labels[index]), img_rot, index_rot
 
@@ -71,9 +78,9 @@ class TestDataset(data.Dataset):
         
         if self._image_transformer:
             img = self._image_transformer(img)
-            img_rot, index_rot = choose_rotation(img)
+            _, img_90, img_180, img_270 = rotate_4_times(img)
         
-        return img, int(self.labels[index]), img_rot, index_rot
+        return img, int(self.labels[index]), img_90, img_180, img_270
 
     def __len__(self):
         return len(self.names)
