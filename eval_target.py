@@ -59,10 +59,10 @@ def evaluation(args,feature_extractor,rot_cls,target_loader_eval,device):
     print('Generated random number is :', rand)
 
     # This txt files will have the names of the source images and the names of the target images selected as unknown
-    target_unknown = open('./new_txt_list/' + args.source + '_known_' + str(rand) + '.txt','a')
+    target_unknown = open('./new_txt_list/' + args.source + '_known_' + str(rand) + '.txt','a+')
 
     # This txt files will have the names of the target images selected as known
-    target_known = open('./new_txt_list/' + args.target + '_known_' + str(rand) + '.txt','a')
+    target_known = open('./new_txt_list/' + args.target + '_known_' + str(rand) + '.txt','a+')
 
     for path in known_samples:
         target_known.write(path)
